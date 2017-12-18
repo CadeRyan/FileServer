@@ -151,7 +151,6 @@ public class Directory {
 	public static void createDatabase(){
 
 		String path = "C:/Users/Cade/dir.csv";
-
 		File f = new File(path);
 
 		f.getParentFile().mkdirs(); 
