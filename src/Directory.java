@@ -1,8 +1,10 @@
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
@@ -30,6 +32,10 @@ public class Directory {
 		BufferedOutputStream bos = null;
 		ServerSocket servsock = null;
 		Socket sock = null;
+		String csvFile = "C:/Users/Cade/dir.csv";
+        BufferedReader br = null;
+        String line = "";
+        String cvsSplitBy = ",";
 
 		//create the directory file (database) 
 		createDatabase();
@@ -95,8 +101,22 @@ public class Directory {
 
 
 						//search for the filename in the directory and return the server port number to the client proxy
+						String resultSocket = "ERROR_";
+						br = new BufferedReader(new FileReader(csvFile));
+			            while ((line = br.readLine()) != null) {
 
-
+			                // use comma as separator
+			                String[] country = line.split(cvsSplitBy);
+			                if(name.equals(country[0])){
+			                	resultSocket = country[1];
+			                }
+			            }
+			            byte [] mybytearray  = new byte [resultSocket.length()]; //send server socket to client proxy
+						mybytearray = resultSocket.getBytes();
+			            os = sock.getOutputStream(); // send server socket to client pro server
+						System.out.println("Sending " + resultSocket + "(" + mybytearray.length + " bytes)");
+						os.write(mybytearray,0,mybytearray.length);
+						os.flush();	
 
 					}
 				}
