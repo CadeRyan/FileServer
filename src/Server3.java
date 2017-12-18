@@ -31,7 +31,7 @@ public class Server3 {
 		try {
 			servsock = new ServerSocket(SOCKET_PORT);
 			while (true) {
-				System.out.println("Waiting...");
+				System.out.println("server3 running...");
 				try {
 					sock = servsock.accept();
 					System.out.println("Accepted connection : " + sock);

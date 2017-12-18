@@ -72,7 +72,7 @@ public class Client {
 				System.out.println("Sending " + selectedFile.getName() + "(" + mybytearray.length + " bytes)");
 				os.write(mybytearray,0,mybytearray.length);
 				os.flush();
-				//System.out.println("Done.");
+				System.out.println("Done.");
 				
 				//________________________________________________________________reading in the server Socket number from the Proxy Server
 				byte[] mybytearraySocket  = new byte [NAME_SIZE];
@@ -84,7 +84,7 @@ public class Client {
 				int serverSocketNumber = Integer.parseInt(name);
 				System.out.println(name);
 				//_________________________________________________________________________________________________________________________
-				sock.close();
+				//sock.close();
 				serverSock = new Socket(SERVER, serverSocketNumber);
 				
 				os = serverSock.getOutputStream();
@@ -94,11 +94,11 @@ public class Client {
 				os.write(ba2 ,0,1);
 				os.flush();
 				try {
-					Thread.sleep(500);
-				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					Thread.sleep(500);                 //1000 milliseconds is one second.
+				} catch(InterruptedException ex) {
+					Thread.currentThread().interrupt();
 				}
+				
 				byte [] mybytearray7  = new byte [selectedFile.getName().length()];
 				mybytearray7 = selectedFile.getName().getBytes();
 				os = serverSock.getOutputStream();
@@ -106,6 +106,12 @@ public class Client {
 				os.write(mybytearray7,0,mybytearray7.length);
 				os.flush();
 
+				try {
+					Thread.sleep(500);                 //1000 milliseconds is one second.
+				} catch(InterruptedException ex) {
+					Thread.currentThread().interrupt();
+				}
+				
 				byte [] mybytearrayFile  = new byte [(int)selectedFile.length()];
 				fis = new FileInputStream(selectedFile);
 				bis = new BufferedInputStream(fis);

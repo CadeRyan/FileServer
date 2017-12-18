@@ -18,7 +18,7 @@ public class Server2 {
 	public final static String FILE_TO_SEND = "c:/temp/source.jpg";  // you may change this
 	public final static String FOLDER_TO_STORE = "C:/server2/";
 	public final static int FILE_SIZE = 902238600;
-	public final static int NAME_SIZE = 2048;
+	public final static int NAME_SIZE = 128;
 
 	public static void main (String [] args ) throws IOException {
 		FileInputStream fis = null;
@@ -31,7 +31,7 @@ public class Server2 {
 		try {
 			servsock = new ServerSocket(SOCKET_PORT);
 			while (true) {
-				System.out.println("Waiting...");
+				System.out.println("server2 running...");
 				try {
 					sock = servsock.accept();
 					System.out.println("Accepted connection : " + sock);
@@ -42,14 +42,17 @@ public class Server2 {
 					InputStream is = sock.getInputStream();
 					int bytesRead = is.read(mybytearray2,0,mybytearray2.length);
 					
+					System.out.println(mybytearray2[0]);
+					
 					if(mybytearray2[0] == 6){
 						System.out.println("here we are");
 					}
 
 					else if(mybytearray2[0] == 8){
-						byte[] mybytearrayName  = new byte [NAME_SIZE];
+						byte[] mybytearrayName  = new byte[NAME_SIZE];
 						InputStream is2 = sock.getInputStream();
 						is2.read(mybytearrayName,0,mybytearrayName.length);
+						//for(int i = 0; i < NAME_SIZE; i ++) System.out.println(mybytearrayName[i]);
 						
 						String name = new String(mybytearrayName);
 						name = name.trim();
@@ -57,6 +60,7 @@ public class Server2 {
 
 						byte [] mybytearray  = new byte [FILE_SIZE];
 						InputStream is4 = sock.getInputStream();
+						System.out.println(FOLDER_TO_STORE + name);
 						fos = new FileOutputStream(FOLDER_TO_STORE + name);
 						bos = new BufferedOutputStream(fos);
 						bytesRead = is4.read(mybytearray,0,mybytearray.length);
@@ -66,7 +70,7 @@ public class Server2 {
 							bytesRead =
 									is.read(mybytearray, current, (mybytearray.length-current));
 							if(bytesRead >= 0) current += bytesRead;
-							//System.out.println(bytesRead);
+							System.out.println(bytesRead);
 						} while(bytesRead != -1);
 
 						System.out.println(mybytearray.length + "   " + current);
