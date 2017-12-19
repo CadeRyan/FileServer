@@ -25,7 +25,7 @@ public class Client {
 	// different name because I don't want to
 	// overwrite the one used by server...
 
-	public final static int FILE_SIZE = 902238600; // file size temporary hard coded
+	public final static int FILE_SIZE = 90223860; // file size temporary hard coded
 	// should bigger than the file to be downloaded
 
 	public static void main (String [] args ) throws IOException {
@@ -95,7 +95,10 @@ public class Client {
 					
 					String loginSentence = "ACCESS_PLEASE";
 					
-					String username = "caderyan" + "," + loginSentence.length() + ",";// SEND LOGIN NAME and length of next array TO AUTH SERVER
+					String enMS = new String(CipherTools.encrypt(loginSentence.getBytes(), 1234));
+					//JOptionPane.showMessageDialog(null, enMS);
+					//JOptionPane.showMessageDialog(null, new String(CipherTools.decrypt(enMS.getBytes(), 1234)) + "test");
+					String username = "caderyan" + "," + enMS.length() + "," + enMS + ",";// SEND LOGIN NAME and length of next array TO AUTH SERVER
 					byte [] mybytearray9  = new byte [username.length()];
 					mybytearray9 = username.getBytes();
 					os = authSock.getOutputStream();
@@ -103,28 +106,31 @@ public class Client {
 					os.write(mybytearray9,0,mybytearray9.length);
 					os.flush();
 					
-					//String loginSentence = "ACCESS_PLEASE";// SEND LOGIN KEY, ENCRYPTED WITH THE PASSWORD, TO AUTH SERVER
-					byte[] mybytearray10 = CipherTools.encrypt(loginSentence.getBytes(), PASSWORD);
-					os = authSock.getOutputStream();
-					System.out.println("Sending " + loginSentence + "(" + mybytearray10.length + " bytes)");
-					os.write(mybytearray10,0,mybytearray10.length);
-					os.flush();
 					
-					try {
-						Thread.sleep(500);
-					} catch (InterruptedException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
+					
+					//String loginSentence = "ACCESS_PLEASE";// SEND LOGIN KEY, ENCRYPTED WITH THE PASSWORD, TO AUTH SERVER
+//					byte[] mybytearray10 = CipherTools.encrypt(loginSentence.getBytes(), PASSWORD);
+//					os = authSock.getOutputStream();
+//					System.out.println("Sending " + loginSentence + "(" + mybytearray10.length + " bytes)");
+//					os.write(mybytearray10,0,mybytearray10.length);
+//					os.flush();
+					
+//					try {
+//						Thread.sleep(500);
+//					} catch (InterruptedException e) {
+//						// TODO Auto-generated catch block
+//						e.printStackTrace();
+//					}
 					
 					byte[] getLengths  = new byte [NAME_SIZE];//get lengths of next two arrays
 					InputStream is26 = authSock.getInputStream();
 					is26.read(getLengths,0,getLengths.length);
 					String tmp = new String(getLengths);
-					//tmp = tmp.trim();
-					JOptionPane.showMessageDialog(null, tmp + "hey");
+					tmp = tmp.trim();
+					//JOptionPane.showMessageDialog(null, tmp + "hey");
 					int first = Integer.parseInt(tmp.split(",")[0]);
 					int second = Integer.parseInt(tmp.split(",")[1]);
+					//JOptionPane.showMessageDialog(null, tmp + "hey");
 					
 					
 					//RECEIVE THE TICKET, ENCRYPTED WITH PASSWORD FROM AUTH SERVER
@@ -141,13 +147,25 @@ public class Client {
 					byte[] session = CipherTools.decrypt(sessionEnc, PASSWORD);
 					String sessionKey = new String(session);
 					
-					JOptionPane.showMessageDialog(null, sessionKey);
+					//JOptionPane.showMessageDialog(null, sessionKey);
 					
 					//___________________________________________________________ END OF AUTH SERVER SECTION
-					serverSock = new Socket(SERVER, serverSocketNumber);	
+					serverSock = new Socket(SERVER, serverSocketNumber);
 					
 					
-
+					String ab = new String(ticket) + "~";
+//					JOptionPane.showMessageDialog(null, ab);
+					byte[] ts = (ab).getBytes();
+					os = serverSock.getOutputStream();
+					os.write(ts, 0, ts.length);
+					os.flush();
+					
+					try {
+						Thread.sleep(500);                 //1000 milliseconds is one second.
+					} catch(InterruptedException ex) {
+						Thread.currentThread().interrupt();
+					}
+					
 					os = serverSock.getOutputStream();//send byte to Server
 					//System.out.println("Sending " + FILE_TO_SEND + "(" + mybytearray.length + " bytes)");
 					byte[] ba2 = new byte[1];
@@ -161,7 +179,8 @@ public class Client {
 					}
 
 					byte [] mybytearray7  = new byte [selectedFile.getName().length()];
-					mybytearray7 = selectedFile.getName().getBytes();
+					String tmp2 = new String(CipherTools.encrypt(selectedFile.getName().getBytes(), Integer.parseInt(sessionKey)))+ "~";
+					mybytearray7 = tmp2.getBytes();
 					os = serverSock.getOutputStream();
 					System.out.println("Sending " + selectedFile.getName() + "(" + mybytearray7.length + " bytes)");
 					os.write(mybytearray7,0,mybytearray7.length);
@@ -179,7 +198,7 @@ public class Client {
 					bis.read(mybytearrayFile,0,mybytearrayFile.length);
 					os = serverSock.getOutputStream();
 					System.out.println("Sending " + selectedFile.getName() + "(" + mybytearrayFile.length + " bytes)");
-					os.write(mybytearrayFile,0,mybytearrayFile.length);
+					os.write(CipherTools.encrypt(mybytearrayFile, Integer.parseInt(sessionKey)), 0, mybytearrayFile.length);
 					os.flush();
 					System.out.println("Done Uploading.");
 				}

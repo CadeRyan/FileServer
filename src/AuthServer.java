@@ -50,7 +50,7 @@ public class AuthServer {
 				try {
 					sock = servsock.accept();
 					//servsock = new ServerSocket(SOCKET_PORT);
-					JOptionPane.showMessageDialog(null, "Accepted connection : " + sock);
+					//JOptionPane.showMessageDialog(null, "Accepted connection : " + sock);
 					
 					byte[] mybytearrayName  = new byte[NAME_SIZE];//receive the username from client
 					InputStream is2 = sock.getInputStream();
@@ -60,27 +60,34 @@ public class AuthServer {
 					String[] vals = input.split(",");
 					String name = vals[0];
 					int msLength = Integer.parseInt(vals[1]);
+					String encrypted = vals[2];
 					//System.out.println(name);
+					//JOptionPane.showMessageDialog(null, vals[2] + ";");
 					
 					
 					//search database here to retrieve password associated with username
 					
 					
-					byte[] mybytearrayEnMs  = new byte[msLength];//receiving encrypted message
-					InputStream is23 = sock.getInputStream();
-					is23.read(mybytearrayEnMs,0,mybytearrayEnMs.length);
+//					byte[] mybytearrayEnMs  = new byte[msLength];//receiving encrypted message
+//					InputStream is23 = sock.getInputStream();
+//					is23.read(mybytearrayEnMs,0,mybytearrayEnMs.length);
+//					
+//					String tempo = new String(mybytearrayEnMs);
+//					
+//					JOptionPane.showMessageDialog(null, tempo);
+//					// getting stuck somewhere here
+//					
+//					
+//					JOptionPane.showMessageDialog(null, vals[1]);
+////					String encrypted = new String(mybytearrayEnMs);
+////					encrypted = encrypted.trim();
+////					System.out.println(encrypted);
+//					String decrypted = new String (CipherTools.decrypt(mybytearrayEnMs, 1234));
+//					System.out.println(decrypted);
+//					JOptionPane.showMessageDialog(null, decrypted);
 					
-					
-					// getting stuck somewhere here
-					
-					
-					JOptionPane.showMessageDialog(null, vals[1]);
-//					String encrypted = new String(mybytearrayEnMs);
-//					encrypted = encrypted.trim();
-//					System.out.println(encrypted);
-					String decrypted = new String (CipherTools.decrypt(mybytearrayEnMs, 1234));
-					System.out.println(decrypted);
-					JOptionPane.showMessageDialog(null, decrypted);
+					String decrypted = new String(CipherTools.decrypt(encrypted.getBytes(), 1234));
+					//JOptionPane.showMessageDialog(null, decrypted);
 					
 					int sessionKey = ThreadLocalRandom.current().nextInt(1111, 9999+1);
 					

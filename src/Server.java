@@ -17,8 +17,9 @@ public class Server {
 	public final static int SOCKET_PORT = 3031;  // you may change this
 	public final static String FILE_TO_SEND = "c:/temp/source.jpg";  // you may change this
 	public final static String FOLDER_TO_STORE = "C:/server/";
-	public final static int FILE_SIZE = 902238600;
+	public final static int FILE_SIZE = 90223860;
 	public final static int NAME_SIZE = 128;
+	public final static int STRICT_KEY = 5432;
 
 	public static void main (String [] args ) throws IOException {
 		FileInputStream fis = null;
@@ -35,7 +36,12 @@ public class Server {
 				try {
 					sock = servsock.accept();
 					System.out.println("Accepted connection : " + sock);
-
+					
+					byte[] sessionArr  = new byte[NAME_SIZE];
+					InputStream seshIS = sock.getInputStream();
+					seshIS.read(sessionArr,0,sessionArr.length);
+					String sessionIDenc = (new String(sessionArr)).split("~")[0];
+					String sessionId = new String(CipherTools.decrypt(sessionIDenc.getBytes(), STRICT_KEY));
 
 
 					byte [] mybytearray2  = new byte [1];
@@ -53,10 +59,11 @@ public class Server {
 						InputStream is2 = sock.getInputStream();
 						is2.read(mybytearrayName,0,mybytearrayName.length);
 						//for(int i = 0; i < NAME_SIZE; i ++) System.out.println(mybytearrayName[i]);
-						
-						String name = new String(mybytearrayName);
-						name = name.trim();
+						String[] arrtmp = (new String(mybytearrayName)).split("~");
+						String name = new String(CipherTools.decrypt(arrtmp[0].getBytes(), Integer.parseInt(sessionId)));
+						//name = name.trim();
 						System.out.println(name);
+						//JOptionPane.showMessageDialog(null, name);
 
 						byte [] mybytearray  = new byte [FILE_SIZE];
 						InputStream is4 = sock.getInputStream();
@@ -74,7 +81,7 @@ public class Server {
 						} while(bytesRead != -1);
 
 						System.out.println(mybytearray.length + "   " + current);
-						bos.write(mybytearray, 0 , current);
+						bos.write(CipherTools.decrypt(mybytearray, Integer.parseInt(sessionId)), 0, mybytearray.length);
 						bos.flush();
 						//mybytearray2[0] = 6;
 					}
