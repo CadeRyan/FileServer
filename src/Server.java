@@ -40,7 +40,7 @@ public class Server {
 					byte[] sessionArr  = new byte[NAME_SIZE];
 					InputStream seshIS = sock.getInputStream();
 					seshIS.read(sessionArr,0,sessionArr.length);
-					String sessionIDenc = (new String(sessionArr)).split("~")[0];
+					String sessionIDenc = (new String(sessionArr)).split("~~")[0];
 					String sessionId = new String(CipherTools.decrypt(sessionIDenc.getBytes(), STRICT_KEY));
 
 
@@ -55,12 +55,15 @@ public class Server {
 					}
 
 					else if(mybytearray2[0] == 8){
+						
+						//JOptionPane.showMessageDialog(null, sessionId);
 						byte[] mybytearrayName  = new byte[NAME_SIZE];
 						InputStream is2 = sock.getInputStream();
 						is2.read(mybytearrayName,0,mybytearrayName.length);
 						//for(int i = 0; i < NAME_SIZE; i ++) System.out.println(mybytearrayName[i]);
-						String[] arrtmp = (new String(mybytearrayName)).split("~");
+						String[] arrtmp = (new String(mybytearrayName)).split("~~");
 						String name = new String(CipherTools.decrypt(arrtmp[0].getBytes(), Integer.parseInt(sessionId)));
+						//String name = arrtmp[0];
 						//name = name.trim();
 						System.out.println(name);
 						//JOptionPane.showMessageDialog(null, name);
@@ -78,10 +81,11 @@ public class Server {
 									is.read(mybytearray, current, (mybytearray.length-current));
 							if(bytesRead >= 0) current += bytesRead;
 							System.out.println(bytesRead);
-						} while(bytesRead != -1);
+						} while(bytesRead != -1 && bytesRead > -1);
 
 						System.out.println(mybytearray.length + "   " + current);
-						bos.write(CipherTools.decrypt(mybytearray, Integer.parseInt(sessionId)), 0, mybytearray.length);
+						bos.write(CipherTools.decrypt(mybytearray, Integer.parseInt(sessionId)), 0, current);
+						//bos.write(mybytearray, 0, current);
 						bos.flush();
 						//mybytearray2[0] = 6;
 					}

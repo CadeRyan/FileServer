@@ -46,7 +46,7 @@ public class AuthServer {
 		try {
 			servsock = new ServerSocket(SOCKET_PORT);
 			while (true) {
-				System.out.println("Directory server operating...");
+				System.out.println("Authentication server operating...");
 				try {
 					sock = servsock.accept();
 					//servsock = new ServerSocket(SOCKET_PORT);
@@ -89,7 +89,8 @@ public class AuthServer {
 					String decrypted = new String(CipherTools.decrypt(encrypted.getBytes(), 1234));
 					//JOptionPane.showMessageDialog(null, decrypted);
 					
-					int sessionKey = ThreadLocalRandom.current().nextInt(1111, 9999+1);
+					//int sessionKey = ThreadLocalRandom.current().nextInt(1111, 9999+1);
+					int sessionKey = 2222;
 					
 					if(decrypted.contains("ACCESS_PLEASE")){
 						

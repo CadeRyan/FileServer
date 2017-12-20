@@ -153,7 +153,7 @@ public class Client {
 					serverSock = new Socket(SERVER, serverSocketNumber);
 					
 					
-					String ab = new String(ticket) + "~";
+					String ab = new String(ticket) + "~~";
 //					JOptionPane.showMessageDialog(null, ab);
 					byte[] ts = (ab).getBytes();
 					os = serverSock.getOutputStream();
@@ -161,7 +161,7 @@ public class Client {
 					os.flush();
 					
 					try {
-						Thread.sleep(500);                 //1000 milliseconds is one second.
+						Thread.sleep(800);                 //1000 milliseconds is one second.
 					} catch(InterruptedException ex) {
 						Thread.currentThread().interrupt();
 					}
@@ -173,21 +173,24 @@ public class Client {
 					os.write(ba2 ,0,1);
 					os.flush();
 					try {
-						Thread.sleep(500);                 //1000 milliseconds is one second.
+						Thread.sleep(800);                 //1000 milliseconds is one second.
 					} catch(InterruptedException ex) {
 						Thread.currentThread().interrupt();
 					}
+					
+					//JOptionPane.showMessageDialog(null, sessionKey);
 
 					byte [] mybytearray7  = new byte [selectedFile.getName().length()];
-					String tmp2 = new String(CipherTools.encrypt(selectedFile.getName().getBytes(), Integer.parseInt(sessionKey)))+ "~";
+					String tmp2 = new String(CipherTools.encrypt(selectedFile.getName().getBytes(), Integer.parseInt(sessionKey)))+ "~~";
 					mybytearray7 = tmp2.getBytes();
+					//mybytearray7 = (selectedFile.getName() + "~").getBytes();
 					os = serverSock.getOutputStream();
 					System.out.println("Sending " + selectedFile.getName() + "(" + mybytearray7.length + " bytes)");
 					os.write(mybytearray7,0,mybytearray7.length);
 					os.flush();
 
 					try {
-						Thread.sleep(500);                 //1000 milliseconds is one second.
+						Thread.sleep(800);                 //1000 milliseconds is one second.
 					} catch(InterruptedException ex) {
 						Thread.currentThread().interrupt();
 					}
@@ -199,6 +202,8 @@ public class Client {
 					os = serverSock.getOutputStream();
 					System.out.println("Sending " + selectedFile.getName() + "(" + mybytearrayFile.length + " bytes)");
 					os.write(CipherTools.encrypt(mybytearrayFile, Integer.parseInt(sessionKey)), 0, mybytearrayFile.length);
+					//os.write(mybytearrayFile, 0, mybytearrayFile.length);
+					
 					os.flush();
 					System.out.println("Done Uploading.");
 				}
