@@ -127,10 +127,11 @@ public class Client {
 					InputStream is26 = authSock.getInputStream();
 					is26.read(getLengths,0,getLengths.length);
 					String tmp = new String(getLengths);
-					tmp = tmp.trim();
+					//tmp = tmp.trim();
+					String[] arr4 = tmp.split("~~");
 					//JOptionPane.showMessageDialog(null, tmp + "hey");
-					int first = Integer.parseInt(tmp.split(",")[0]);
-					int second = Integer.parseInt(tmp.split(",")[1]);
+					int first = Integer.parseInt(arr4[0]);
+					int second = Integer.parseInt(arr4[1]);
 					//JOptionPane.showMessageDialog(null, tmp + "hey");
 					
 					
@@ -162,7 +163,7 @@ public class Client {
 					os.flush();
 					
 					try {
-						Thread.sleep(800);                 //1000 milliseconds is one second.
+						Thread.sleep(500);                 //1000 milliseconds is one second.
 					} catch(InterruptedException ex) {
 						Thread.currentThread().interrupt();
 					}
@@ -174,7 +175,7 @@ public class Client {
 					os.write(ba2 ,0,1);
 					os.flush();
 					try {
-						Thread.sleep(800);                 //1000 milliseconds is one second.
+						Thread.sleep(500);                 //1000 milliseconds is one second.
 					} catch(InterruptedException ex) {
 						Thread.currentThread().interrupt();
 					}
@@ -191,7 +192,7 @@ public class Client {
 					os.flush();
 
 					try {
-						Thread.sleep(800);                 //1000 milliseconds is one second.
+						Thread.sleep(500);                 //1000 milliseconds is one second.
 					} catch(InterruptedException ex) {
 						Thread.currentThread().interrupt();
 					}
@@ -210,7 +211,7 @@ public class Client {
 				}
 			}
 
-			// receive file
+			// ________________________________________________________________________DOWNLOAD SECTION
 			else if(answer == JOptionPane.NO_OPTION){
 
 				os = sock.getOutputStream();
@@ -227,12 +228,111 @@ public class Client {
 
 				System.out.println(name + " this is what you're looking for");
 
-				byte [] mybytearrayName  = new byte [name.length()];
+				byte [] mybytearrayName  = new byte [name.length()];//send filename to proxy
 				mybytearrayName = name.getBytes();
 				os = sock.getOutputStream();
 				System.out.println("Sending " + name + "(" + mybytearrayName.length + " bytes)");
 				os.write(mybytearrayName,0,mybytearrayName.length);
 				os.flush();
+				
+				byte[] mybytearraySocket  = new byte [NAME_SIZE];//take in the port number of the server
+				InputStream isSocket = sock.getInputStream();
+				isSocket.read(mybytearraySocket,0,mybytearraySocket.length);
+				String socketNum = new String(mybytearraySocket);
+				socketNum = socketNum.trim();
+				int serverSocketNumber = Integer.parseInt(socketNum);
+				System.out.println(socketNum);
+				
+				
+				
+				//_______________________________DOWNLOAD AUTH SECTION___________________________
+				
+				
+				
+				//section for auth handshake
+				authSock = new Socket(SERVER, AUTH_PORT);
+				
+				String loginSentence = "ACCESS_PLEASE";
+				
+				String enMS = new String(CipherTools.encrypt(loginSentence.getBytes(), 1234));
+				//JOptionPane.showMessageDialog(null, enMS);
+				//JOptionPane.showMessageDialog(null, new String(CipherTools.decrypt(enMS.getBytes(), 1234)) + "test");
+				String username = "caderyan" + "~~" + enMS.length() + "~~" 
+						+ enMS + "~~" + socketNum + "~~" ;// SEND LOGIN NAME and length of next array TO AUTH SERVER
+				byte [] mybytearray9  = new byte [username.length()];
+				mybytearray9 = username.getBytes();
+				os = authSock.getOutputStream();
+				System.out.println("Sending " + "(" + mybytearray9.length + " bytes)");
+				os.write(mybytearray9,0,mybytearray9.length);
+				os.flush();
+				
+				byte[] getLengths  = new byte [NAME_SIZE];//get lengths of next two arrays
+				InputStream is26 = authSock.getInputStream();
+				is26.read(getLengths,0,getLengths.length);
+				String tmp = new String(getLengths);
+				//tmp = tmp.trim();
+				String[] arr4 = tmp.split("~~");
+				//JOptionPane.showMessageDialog(null, tmp + "hey");
+				int first = Integer.parseInt(arr4[0]);
+				int second = Integer.parseInt(arr4[1]);
+				
+				
+				//RECEIVE THE TICKET, ENCRYPTED WITH PASSWORD FROM AUTH SERVER
+				byte[] ticketEnc  = new byte [first];//
+				InputStream is27 = authSock.getInputStream();
+				is27.read(ticketEnc,0,first);
+				byte[] ticket = CipherTools.decrypt(ticketEnc, PASSWORD);
+				
+				
+				//RECEIVE THE SESSION KEY, ENCRYPTED WITH PASSWORD, FROM AUTH SERVER
+				byte[] sessionEnc  = new byte [second];//
+				InputStream is28 = authSock.getInputStream();
+				is27.read(sessionEnc,0,second);
+				byte[] session = CipherTools.decrypt(sessionEnc, PASSWORD);
+				String sessionKey = new String(session);
+				
+				//JOptionPane.showMessageDialog(null, sessionKey);
+				
+				//_______________________________________END OF DOWNLOAD AUTH_____________________________
+				
+				
+				serverSock = new Socket(SERVER, serverSocketNumber);// CONNECTED TO CORRECT SERVER
+				
+				
+				//send ticket to server
+				
+				String ab = new String(ticket) + "~~";
+//				JOptionPane.showMessageDialog(null, ab);
+				byte[] ts = (ab).getBytes();
+				os = serverSock.getOutputStream();
+				os.write(ts, 0, ts.length);
+				os.flush();
+				
+				try {
+					Thread.sleep(500);                 //1000 milliseconds is one second.
+				} catch(InterruptedException ex) {
+					Thread.currentThread().interrupt();
+				}
+				
+				//send byte to server
+				os = serverSock.getOutputStream();
+				os.write(ba ,0,1);
+				os.flush();
+				
+				try {
+					Thread.sleep(500);                 //1000 milliseconds is one second.
+				} catch(InterruptedException ex) {
+					Thread.currentThread().interrupt();
+				}
+				
+				//send filename to server
+				os = serverSock.getOutputStream();
+				System.out.println("Sending " + name + "(" + mybytearrayName.length + " bytes)");
+				os.write(mybytearrayName,0,mybytearrayName.length);
+				os.flush();
+				
+				
+				
 
 				String folderToSave = "";
 
@@ -251,10 +351,12 @@ public class Client {
 				} else {
 					System.out.println("No Selection ");
 				}
+				
+				
 
 
-				byte [] mybytearray  = new byte [FILE_SIZE];
-				InputStream is = sock.getInputStream();
+				byte [] mybytearray  = new byte [FILE_SIZE]; // receive file from server
+				InputStream is = serverSock.getInputStream();
 				fos = new FileOutputStream(folderToSave + "/" + name);
 				bos = new BufferedOutputStream(fos);
 				bytesRead = is.read(mybytearray,0,mybytearray.length);

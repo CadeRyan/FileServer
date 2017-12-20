@@ -65,7 +65,7 @@ public class AuthServer {
 					String encrypted = vals[2];
 					String serverSocket = vals[3];
 					//System.out.println(name);
-					//JOptionPane.showMessageDialog(null, vals[2] + ";");
+					//JOptionPane.showMessageDialog(null, vals);
 					
 					
 					String decrypted = new String(CipherTools.decrypt(encrypted.getBytes(), 1234));
@@ -86,12 +86,19 @@ public class AuthServer {
 						byte[] token2 = CipherTools.encrypt((sessionKey+"").getBytes(), 1234);// sending encrypted sessionKey to client
 						
 						
-						String lengths = token.length + "," + token2.length;//send lengths to client
+						String lengths = token.length + "~~" + token2.length + "~~";//send lengths to client
 						byte[] sendLen = lengths.getBytes();
 						os = sock.getOutputStream(); // 
 						System.out.println("Sending " + "lengths" + "(" + lengths.length() + " bytes)");
 						os.write(sendLen,0,sendLen.length);
 						os.flush();
+						
+						try {
+							Thread.sleep(500);
+						} catch (InterruptedException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
 						
 						
 						//byte[] token  = new byte[TOKEN_SIZE];
@@ -100,6 +107,13 @@ public class AuthServer {
 						System.out.println("Sending " + "ticket" + "(" + token.length + " bytes)");
 						os.write(token,0,token.length);
 						os.flush();
+						
+						try {
+							Thread.sleep(500);
+						} catch (InterruptedException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
 						
 						
 						//token = resultSocket.getBytes();
