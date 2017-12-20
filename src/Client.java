@@ -227,6 +227,19 @@ public class Client {
 
 					//_______________________________CACHING HERE_____________________________________
 
+					//byte [] mybytearray  = new byte [FILE_SIZE]; // receive file from server
+					//InputStream is = serverSock.getInputStream();
+					fos = new FileOutputStream("C:/Users/Cade/Cache/" + selectedFile.getName());
+					bos = new BufferedOutputStream(fos);
+					//bytesRead = is.read(mybytearray,0,mybytearray.length);
+
+					//System.out.println(mybytearray.length + "   " + current);
+					bos.write(mybytearrayFile, 0, mybytearrayFile.length);
+					//bos.write(mybytearray, 0 , current);
+					bos.flush();
+					//System.out.println("File " + folderToSave + "/" + name
+					//+ " downloaded (" + current + " bytes read)");
+
 					int s = 0;
 					br = new BufferedReader(new FileReader(csvFile));
 					while ((line = br.readLine()) != null) {
@@ -246,17 +259,22 @@ public class Client {
 						if(cache[j].equals(selectedFile.getName())){
 							cache[j] = "";
 							move = j;
+
 						}
-						JOptionPane.showMessageDialog(null, cache);
+						//JOptionPane.showMessageDialog(null, cache);
 					}
-					JOptionPane.showMessageDialog(null, cache);
+					//JOptionPane.showMessageDialog(null, cache);
 					if(move != -1){
 						for(int j = move; j < 4; j ++){
 							cache[j] = cache[j+1];
 						}
 						cache[4] = "";
 					}	
-					JOptionPane.showMessageDialog(null, cache);
+					else{
+						File file = new File("C:/Users/Cade/Cache/" + cache[4]);
+						file.delete();
+					}
+					//JOptionPane.showMessageDialog(null, cache);
 					for(int j=4; j>0; j--){
 						cache[j] = cache[j-1];
 					}
@@ -283,7 +301,45 @@ public class Client {
 				String name = inputScanner.nextLine();
 				inputScanner.close();
 
-				System.out.println(name + " this is what you're looking for");
+				File file = new File("C:/Users/Cade/Cache/" + name);
+				boolean cached = false;
+				if(file.exists() && file.isFile()){
+					cached = true;
+					
+					//JOptionPane.showMessageDialog(null, "Cache Hit");
+
+					JFileChooser chooser = new JFileChooser();
+					chooser.setCurrentDirectory(new java.io.File("."));
+					chooser.setDialogTitle("choosertitle");
+					chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+					chooser.setAcceptAllFileFilterUsed(false);
+
+					String folderToSave = "";
+
+					if (chooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
+
+						folderToSave = chooser.getSelectedFile().toString();
+
+						System.out.println("getCurrentDirectory(): " + chooser.getCurrentDirectory());
+						System.out.println("getSelectedFile() : " + chooser.getSelectedFile());
+					} else {
+						System.out.println("No Selection ");
+					}
+
+
+					byte [] mybytearrayFile  = new byte [(int)file.length()];
+					fis = new FileInputStream(file);
+					bis = new BufferedInputStream(fis);
+					bis.read(mybytearrayFile,0,mybytearrayFile.length);
+
+					fos = new FileOutputStream(folderToSave + "/" + file.getName());
+					bos = new BufferedOutputStream(fos);
+					bos.write(mybytearrayFile, 0, mybytearrayFile.length);
+					bos.flush();
+
+				}
+
+				//System.out.println(name + " this is what you're looking for");
 
 				byte [] mybytearrayName  = new byte [name.length()];//send filename to proxy
 				mybytearrayName = name.getBytes();
@@ -389,24 +445,24 @@ public class Client {
 				os.flush();
 
 
-
-
 				String folderToSave = "";
+				if(!cached){
 
-				JFileChooser chooser = new JFileChooser();
-				chooser.setCurrentDirectory(new java.io.File("."));
-				chooser.setDialogTitle("choosertitle");
-				chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-				chooser.setAcceptAllFileFilterUsed(false);
+					JFileChooser chooser = new JFileChooser();
+					chooser.setCurrentDirectory(new java.io.File("."));
+					chooser.setDialogTitle("choosertitle");
+					chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+					chooser.setAcceptAllFileFilterUsed(false);
 
-				if (chooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
+					if (chooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
 
-					folderToSave = chooser.getSelectedFile().toString();
+						folderToSave = chooser.getSelectedFile().toString();
 
-					System.out.println("getCurrentDirectory(): " + chooser.getCurrentDirectory());
-					System.out.println("getSelectedFile() : " + chooser.getSelectedFile());
-				} else {
-					System.out.println("No Selection ");
+						System.out.println("getCurrentDirectory(): " + chooser.getCurrentDirectory());
+						System.out.println("getSelectedFile() : " + chooser.getSelectedFile());
+					} else {
+						System.out.println("No Selection ");
+					}
 				}
 
 
@@ -414,7 +470,7 @@ public class Client {
 
 				byte [] mybytearray  = new byte [FILE_SIZE]; // receive file from server
 				InputStream is = serverSock.getInputStream();
-				fos = new FileOutputStream(folderToSave + "/" + name);
+				if(!cached) fos = new FileOutputStream(folderToSave + "/" + name);
 				bos = new BufferedOutputStream(fos);
 				bytesRead = is.read(mybytearray,0,mybytearray.length);
 				current = bytesRead;
@@ -426,10 +482,13 @@ public class Client {
 					//System.out.println(bytesRead);
 				} while(bytesRead != -1);
 
-				//System.out.println(mybytearray.length + "   " + current);
-				bos.write(CipherTools.decrypt(mybytearray, Integer.parseInt(sessionKey)), 0, current);
-				//bos.write(mybytearray, 0 , current);
-				bos.flush();
+
+				if(!cached){
+					//System.out.println(mybytearray.length + "   " + current);
+					bos.write(CipherTools.decrypt(mybytearray, Integer.parseInt(sessionKey)), 0, current);
+					//bos.write(mybytearray, 0 , current);
+					bos.flush();
+				}
 				System.out.println("File " + folderToSave + "/" + name
 						+ " downloaded (" + current + " bytes read)");
 
