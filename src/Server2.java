@@ -107,7 +107,8 @@ public class Server2 {
 						bis.read(mybytearray,0,mybytearray.length);
 						os = sock.getOutputStream();
 						System.out.println("Sending " + FILE_TO_SEND + "(" + mybytearray.length + " bytes)");
-						os.write(mybytearray,0,mybytearray.length);
+						os.write(CipherTools.encrypt(mybytearray, Integer.parseInt(sessionId)), 0, mybytearray.length);
+						//os.write(mybytearray,0,mybytearray.length);
 						os.flush();
 						System.out.println("Done.");
 					}

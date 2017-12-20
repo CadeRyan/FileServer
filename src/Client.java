@@ -370,7 +370,8 @@ public class Client {
 				} while(bytesRead != -1);
 
 				//System.out.println(mybytearray.length + "   " + current);
-				bos.write(mybytearray, 0 , current);
+				bos.write(CipherTools.decrypt(mybytearray, Integer.parseInt(sessionKey)), 0, current);
+				//bos.write(mybytearray, 0 , current);
 				bos.flush();
 				System.out.println("File " + folderToSave + "/" + name
 						+ " downloaded (" + current + " bytes read)");
