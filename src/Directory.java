@@ -101,7 +101,7 @@ public class Directory {
 
 
 						//search for the filename in the directory and return the server port number to the client proxy
-						String resultSocket = "ERROR_";
+						String resultSocket = "NOPE";
 						br = new BufferedReader(new FileReader(csvFile));
 			            while ((line = br.readLine()) != null) {
 
@@ -116,7 +116,7 @@ public class Directory {
 			            os = sock.getOutputStream(); // send server socket to client pro server
 						System.out.println("Sending " + resultSocket + "(" + mybytearray.length + " bytes)");
 						os.write(mybytearray,0,mybytearray.length);
-						os.flush();	
+						os.flush();
 
 					}
 				}

@@ -16,7 +16,7 @@ public class Server3 {
 
 	public final static int SOCKET_PORT = 3033;  // you may change this
 	public final static String FILE_TO_SEND = "c:/temp/source.jpg";  // you may change this
-	public final static String FOLDER_TO_STORE = "C:/server3/";
+	public final static String FOLDER_TO_STORE = "C:/Users/Cade/server3/";
 	public final static int FILE_SIZE = 90223860;
 	public final static int NAME_SIZE = 128;
 	public final static int STRICT_KEY = 7654;
@@ -31,6 +31,7 @@ public class Server3 {
 		Socket sock = null;
 		try {
 			servsock = new ServerSocket(SOCKET_PORT);
+			new File(FOLDER_TO_STORE).mkdirs();
 			while (true) {
 				System.out.println("server3 running...");
 				try {

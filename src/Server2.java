@@ -16,7 +16,7 @@ public class Server2 {
 
 	public final static int SOCKET_PORT = 3032;  // you may change this
 	public final static String FILE_TO_SEND = "c:/temp/source.jpg";  // you may change this
-	public final static String FOLDER_TO_STORE = "C:/server2/";
+	public final static String FOLDER_TO_STORE = "C:/Users/Cade/server2/";
 	public final static int FILE_SIZE = 90223860;
 	public final static int NAME_SIZE = 128;
 	public final static int STRICT_KEY = 6543;
@@ -33,6 +33,7 @@ public class Server2 {
 			servsock = new ServerSocket(SOCKET_PORT);
 			while (true) {
 				System.out.println("server2 running...");
+				new File(FOLDER_TO_STORE).mkdirs();
 				try {
 					sock = servsock.accept();
 					System.out.println("Accepted connection : " + sock);

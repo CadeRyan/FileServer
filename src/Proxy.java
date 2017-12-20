@@ -18,7 +18,7 @@ public class Proxy {
 	public final static int SOCKET_PORT = 3030;
 	public final static int SOCKET_PORT_TO_DB = 3000;// you may change this
 	public final static String FILE_TO_SEND = "c:/temp/source.jpg";  // you may change this
-	public final static String FOLDER_TO_STORE = "C:/server/";
+	public final static String FOLDER_TO_STORE = "C:/Users/Cade/Cache/";
 	public final static String SERVER = "127.0.0.1";
 	public final static int FILE_SIZE = 902238600;
 	public final static int NAME_SIZE = 2048;
@@ -34,6 +34,7 @@ public class Proxy {
 		Socket socktoDB = null;
 		try {
 			servsock = new ServerSocket(SOCKET_PORT);
+			new File(FOLDER_TO_STORE).mkdirs();
 			while (true) {
 				System.out.println("Waiting...");
 				try {
@@ -53,55 +54,105 @@ public class Proxy {
 						System.out.println("here we are");
 					}
 
-					else if(mybytearray2[0] == 8){// sending Name of file onto DB to get back the
-						
-						
-						os = socktoDB.getOutputStream();// send the byte (8) to directory
-						os.write(mybytearray2 ,0,1);
-						os.flush();
-						
-						
+					else if(mybytearray2[0] == 8){// sending Name of file onto DB to get back the server socket
+
 						byte[] mybytearrayName  = new byte [NAME_SIZE];//get the filename from Client
 						InputStream is2 = sock.getInputStream();
 						is2.read(mybytearrayName,0,mybytearrayName.length);	
 						String name = new String(mybytearrayName);
 						name = name.trim();
 						System.out.println("Proxy" + name);
-						
-						
-						byte [] mybytearrayNameToDB  = new byte [name.length()];//send to filename to directory
+
+						os = socktoDB.getOutputStream();// send 7 byte to directory to see if file already exists
+						byte[] ba = new byte[1];
+						ba[0] = 7;
+						os.write(ba ,0,1);
+						os.flush();
+
+						byte [] mybytearrayNameToDB  = new byte [name.length()];//send filename to directory
 						mybytearrayNameToDB = name.getBytes();
 						os = socktoDB.getOutputStream();
 						System.out.println("Sending " + name + "(" + mybytearrayNameToDB.length + " bytes)");
 						os.write(mybytearrayNameToDB,0,mybytearrayNameToDB.length);
 						os.flush();
 						System.out.println("Done.");
+
+						byte[] mybytearraySocket  = new byte [NAME_SIZE];//take in the port number of the server
+						InputStream isSocket = socktoDB.getInputStream();
+						isSocket.read(mybytearraySocket,0,mybytearraySocket.length);
+						String socketNum = new String(mybytearraySocket);
+						socketNum = socketNum.trim();
+						//int serverSocketNumber = Integer.parseInt(socketNum);
+						System.out.println(socketNum);
 						
+						socktoDB.close();
 
-						String serverPort = "";
-						int randomNum = ThreadLocalRandom.current().nextInt(1, 3+1);
+						if(socketNum.equals("NOPE")){//file does not exist already in directory and we will assign it one
 
-						if(randomNum == 1) serverPort = "3031";
-						else if(randomNum == 2) serverPort = "3032";
-						else serverPort = "3033";
+							socktoDB = new Socket(SERVER, SOCKET_PORT_TO_DB); 
 
-						byte [] mybytearray  = new byte [serverPort.length()]; //send server socket to client
-						mybytearray = serverPort.getBytes();
-						os = sock.getOutputStream();
-						System.out.println("Sending " + serverPort + "(" + mybytearray.length + " bytes)");
-						os.write(mybytearray,0,mybytearray.length);
-						os.flush();	
-						
-						os = socktoDB.getOutputStream(); // send server socket to directory server
-						System.out.println("Sending " + serverPort + "(" + mybytearray.length + " bytes)");
-						os.write(mybytearray,0,mybytearray.length);
-						os.flush();	
+							os = socktoDB.getOutputStream();// send the byte (8) to directory
+							os.write(mybytearray2 ,0,1);
+							os.flush();
+
+
+
+							//byte [] mybytearrayNameToDB  = new byte [name.length()];//send filename to directory
+							//mybytearrayNameToDB = name.getBytes();
+							os = socktoDB.getOutputStream();
+							System.out.println("Sending " + name + "(" + mybytearrayNameToDB.length + " bytes)");
+							os.write(mybytearrayNameToDB,0,mybytearrayNameToDB.length);
+							os.flush();
+							System.out.println("Done.");
+
+
+							String serverPort = "";
+							int randomNum = ThreadLocalRandom.current().nextInt(1, 3+1);
+
+							if(randomNum == 1) serverPort = "3031";
+							else if(randomNum == 2) serverPort = "3032";
+							else serverPort = "3033";
+
+							byte [] mybytearray  = new byte [serverPort.length()]; //send server socket to client
+							mybytearray = serverPort.getBytes();
+							os = sock.getOutputStream();
+							System.out.println("Sending " + serverPort + "(" + mybytearray.length + " bytes)");
+							os.write(mybytearray,0,mybytearray.length);
+							os.flush();	
+
+							os = socktoDB.getOutputStream(); // send server socket to directory server
+							System.out.println("Sending " + serverPort + "(" + mybytearray.length + " bytes)");
+							os.write(mybytearray,0,mybytearray.length);
+							os.flush();	
+
+						}
+
+
+						else{
+							byte [] mybytearray  = new byte [socketNum.length()]; //send server socket to client
+							mybytearray = socketNum.getBytes();
+							os = sock.getOutputStream();
+							System.out.println("Sending " + socketNum + "(" + mybytearray.length + " bytes)");
+							os.write(mybytearray,0,mybytearray.length);
+							os.flush();	
+						}
+
+
+
+
+
+
+
+
+
+
+
 					}
 
 
 
 					else{// client wants to download from server
-						
+
 						os = socktoDB.getOutputStream();// send the byte (7) to directory
 						os.write(mybytearray2 ,0,1);
 						os.flush();
@@ -112,7 +163,7 @@ public class Proxy {
 						String name = new String(mybytearrayName);
 						name = name.trim();
 						System.out.println(name);
-							
+
 						byte [] mybytearrayNameToDB  = new byte [name.length()];//send to filename to directory
 						mybytearrayNameToDB = name.getBytes();
 						os = socktoDB.getOutputStream();
@@ -120,7 +171,7 @@ public class Proxy {
 						os.write(mybytearrayNameToDB,0,mybytearrayNameToDB.length);
 						os.flush();
 						System.out.println("Done.");
-						
+
 						byte[] mybytearraySocket  = new byte [NAME_SIZE];//take in the port number of the server
 						InputStream isSocket = socktoDB.getInputStream();
 						isSocket.read(mybytearraySocket,0,mybytearraySocket.length);
@@ -128,15 +179,15 @@ public class Proxy {
 						socketNum = socketNum.trim();
 						//int serverSocketNumber = Integer.parseInt(socketNum);
 						System.out.println(socketNum);
-						
+
 						byte [] mybytearray  = new byte [socketNum.length()]; //send server socket to client
 						mybytearray = socketNum.getBytes();
 						os = sock.getOutputStream();
 						System.out.println("Sending " + socketNum + "(" + mybytearray.length + " bytes)");
 						os.write(mybytearray,0,mybytearray.length);
 						os.flush();	
-						
-						
+
+
 
 						//here we will use this name to search against the directory and return to the client to port number of the server
 
