@@ -26,6 +26,8 @@ public class AuthServer {
 	public final static int NAME_SIZE = 128;
 	public final static int TOKEN_SIZE = 1024;
 	public final static int STRICT_KEY = 5432;
+	public final static int STRICT_KEY2 = 6543;
+	public final static int STRICT_KEY3 = 7654;
 
 	public static void main (String [] args ) throws IOException {
 		FileInputStream fis = null;
@@ -57,34 +59,14 @@ public class AuthServer {
 					is2.read(mybytearrayName,0,mybytearrayName.length);
 
 					String input = new String(mybytearrayName);
-					String[] vals = input.split(",");
+					String[] vals = input.split("~~");
 					String name = vals[0];
 					int msLength = Integer.parseInt(vals[1]);
 					String encrypted = vals[2];
+					String serverSocket = vals[3];
 					//System.out.println(name);
 					//JOptionPane.showMessageDialog(null, vals[2] + ";");
 					
-					
-					//search database here to retrieve password associated with username
-					
-					
-//					byte[] mybytearrayEnMs  = new byte[msLength];//receiving encrypted message
-//					InputStream is23 = sock.getInputStream();
-//					is23.read(mybytearrayEnMs,0,mybytearrayEnMs.length);
-//					
-//					String tempo = new String(mybytearrayEnMs);
-//					
-//					JOptionPane.showMessageDialog(null, tempo);
-//					// getting stuck somewhere here
-//					
-//					
-//					JOptionPane.showMessageDialog(null, vals[1]);
-////					String encrypted = new String(mybytearrayEnMs);
-////					encrypted = encrypted.trim();
-////					System.out.println(encrypted);
-//					String decrypted = new String (CipherTools.decrypt(mybytearrayEnMs, 1234));
-//					System.out.println(decrypted);
-//					JOptionPane.showMessageDialog(null, decrypted);
 					
 					String decrypted = new String(CipherTools.decrypt(encrypted.getBytes(), 1234));
 					//JOptionPane.showMessageDialog(null, decrypted);
@@ -94,8 +76,12 @@ public class AuthServer {
 					
 					if(decrypted.contains("ACCESS_PLEASE")){
 						
+						int strctTmp = 0;
+						if(serverSocket.equals("3031")) strctTmp = STRICT_KEY;
+						else if(serverSocket.equals("3032")) strctTmp = STRICT_KEY2;
+						else if(serverSocket.equals("3033")) strctTmp = STRICT_KEY3;
 						//JOptionPane.showMessageDialog(null, "You did it fam");
-						byte[] tokentemp = CipherTools.encrypt((sessionKey+"").getBytes(), STRICT_KEY);//sending encrypted ticket to client
+						byte[] tokentemp = CipherTools.encrypt((sessionKey+"").getBytes(), strctTmp);//sending encrypted ticket to client
 						byte[] token = CipherTools.encrypt(tokentemp, 1234);
 						byte[] token2 = CipherTools.encrypt((sessionKey+"").getBytes(), 1234);// sending encrypted sessionKey to client
 						

@@ -19,7 +19,7 @@ public class Server2 {
 	public final static String FOLDER_TO_STORE = "C:/server2/";
 	public final static int FILE_SIZE = 90223860;
 	public final static int NAME_SIZE = 128;
-	public final static int STRICT_KEY = 5432;
+	public final static int STRICT_KEY = 6543;
 
 	public static void main (String [] args ) throws IOException {
 		FileInputStream fis = null;

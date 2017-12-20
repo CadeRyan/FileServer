@@ -98,7 +98,8 @@ public class Client {
 					String enMS = new String(CipherTools.encrypt(loginSentence.getBytes(), 1234));
 					//JOptionPane.showMessageDialog(null, enMS);
 					//JOptionPane.showMessageDialog(null, new String(CipherTools.decrypt(enMS.getBytes(), 1234)) + "test");
-					String username = "caderyan" + "," + enMS.length() + "," + enMS + ",";// SEND LOGIN NAME and length of next array TO AUTH SERVER
+					String username = "caderyan" + "~~" + enMS.length() + "~~" 
+							+ enMS + "~~" + name + "~~" ;// SEND LOGIN NAME and length of next array TO AUTH SERVER
 					byte [] mybytearray9  = new byte [username.length()];
 					mybytearray9 = username.getBytes();
 					os = authSock.getOutputStream();
