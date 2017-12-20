@@ -62,6 +62,7 @@ public class Proxy {
 						String name = new String(mybytearrayName);
 						name = name.trim();
 						System.out.println("Proxy" + name);
+						
 
 						os = socktoDB.getOutputStream();// send 7 byte to directory to see if file already exists
 						byte[] ba = new byte[1];
@@ -123,7 +124,17 @@ public class Proxy {
 							os = socktoDB.getOutputStream(); // send server socket to directory server
 							System.out.println("Sending " + serverPort + "(" + mybytearray.length + " bytes)");
 							os.write(mybytearray,0,mybytearray.length);
-							os.flush();	
+							os.flush();
+							
+							
+							//__________________ CACHING HAPPENS HERE___________________________________
+							
+							
+							
+							
+							
+							
+							//_________________________________________________________________________
 
 						}
 
@@ -139,7 +150,7 @@ public class Proxy {
 
 
 
-
+						
 
 
 
