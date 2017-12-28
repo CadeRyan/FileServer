@@ -54,13 +54,7 @@ public class Directory {
 					byte [] mybytearray2  = new byte [1];
 					InputStream is = sock.getInputStream();
 					int bytesRead = is.read(mybytearray2,0,mybytearray2.length);//receive the indicator byte from client proxy
-					//					
-					//					System.out.println(mybytearray2[0]);
-					//					
-					//					if(mybytearray2[0] == 6){
-					//						System.out.println("here we are");
-					//					}
-					//
+					
 					if(mybytearray2[0] == 8){
 						byte[] mybytearrayName  = new byte[NAME_SIZE];//receive the filename from client proxy
 						InputStream is2 = sock.getInputStream();
@@ -77,17 +71,10 @@ public class Directory {
 						
 						String socketNum = new String(mybytearraySocket);
 						socketNum = socketNum.trim();
-						//int serverSocketNumber = Integer.parseInt(socketNum);
 						System.out.println(socketNum);
 						
 						exportToDatabase(name + "," + socketNum);
-
-						//sock.close();
-
-						//mybytearray2[0] = 6;
 					}
-
-
 
 					else{// send file
 
@@ -107,7 +94,7 @@ public class Directory {
 
 			                // use comma as separator
 			                String[] country = line.split(cvsSplitBy);
-			                if(name.equals(country[0])){
+			                if(name.equalsIgnoreCase(country[0])){
 			                	resultSocket = country[1];
 			                }
 			            }
@@ -117,7 +104,6 @@ public class Directory {
 						System.out.println("Sending " + resultSocket + "(" + mybytearray.length + " bytes)");
 						os.write(mybytearray,0,mybytearray.length);
 						os.flush();
-
 					}
 				}
 				finally {
@@ -132,7 +118,6 @@ public class Directory {
 		}
 		finally {
 			if (servsock != null) servsock.close();
-			//if (sock!=null) sock.close();
 		}
 	}
 	public static void exportToDatabase(String textline) {

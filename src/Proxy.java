@@ -16,8 +16,7 @@ import javax.swing.JOptionPane;
 public class Proxy {
 
 	public final static int SOCKET_PORT = 3030;
-	public final static int SOCKET_PORT_TO_DB = 3000;// you may change this
-	public final static String FILE_TO_SEND = "c:/temp/source.jpg";  // you may change this
+	public final static int SOCKET_PORT_TO_DB = 3000;
 	public final static String FOLDER_TO_STORE = "C:/Users/Cade/Cache/";
 	public final static String SERVER = "127.0.0.1";
 	public final static int FILE_SIZE = 902238600;
@@ -38,8 +37,6 @@ public class Proxy {
 			while (true) {
 				System.out.println("Waiting...");
 				try {
-					//socktoDB = new Socket(SERVER, SOCKET_PORT_TO_DB);
-
 					sock = servsock.accept();
 					socktoDB = new Socket(SERVER, SOCKET_PORT_TO_DB); 
 					System.out.println("Accepted connection : " + sock);
@@ -83,7 +80,6 @@ public class Proxy {
 						isSocket.read(mybytearraySocket,0,mybytearraySocket.length);
 						String socketNum = new String(mybytearraySocket);
 						socketNum = socketNum.trim();
-						//int serverSocketNumber = Integer.parseInt(socketNum);
 						System.out.println(socketNum);
 						
 						socktoDB.close();
@@ -96,10 +92,6 @@ public class Proxy {
 							os.write(mybytearray2 ,0,1);
 							os.flush();
 
-
-
-							//byte [] mybytearrayNameToDB  = new byte [name.length()];//send filename to directory
-							//mybytearrayNameToDB = name.getBytes();
 							os = socktoDB.getOutputStream();
 							System.out.println("Sending " + name + "(" + mybytearrayNameToDB.length + " bytes)");
 							os.write(mybytearrayNameToDB,0,mybytearrayNameToDB.length);
@@ -125,16 +117,6 @@ public class Proxy {
 							System.out.println("Sending " + serverPort + "(" + mybytearray.length + " bytes)");
 							os.write(mybytearray,0,mybytearray.length);
 							os.flush();
-							
-							
-							//__________________ CACHING HAPPENS HERE___________________________________
-							
-							
-							
-							
-							
-							
-							//_________________________________________________________________________
 
 						}
 
@@ -147,17 +129,6 @@ public class Proxy {
 							os.write(mybytearray,0,mybytearray.length);
 							os.flush();	
 						}
-
-
-
-						
-
-
-
-
-
-
-
 					}
 
 
@@ -198,24 +169,6 @@ public class Proxy {
 						os.write(mybytearray,0,mybytearray.length);
 						os.flush();	
 
-
-
-						//here we will use this name to search against the directory and return to the client to port number of the server
-
-
-
-
-
-						//						File myFile = new File (FOLDER_TO_STORE + name);
-						//						byte [] mybytearray  = new byte [(int)myFile.length()];
-						//						fis = new FileInputStream(myFile);
-						//						bis = new BufferedInputStream(fis);
-						//						bis.read(mybytearray,0,mybytearray.length);
-						//						os = sock.getOutputStream();
-						//						System.out.println("Sending " + FILE_TO_SEND + "(" + mybytearray.length + " bytes)");
-						//						os.write(mybytearray,0,mybytearray.length);
-						//						os.flush();
-						//						System.out.println("Done.");
 					}
 				}
 				finally {
@@ -227,7 +180,6 @@ public class Proxy {
 		}
 		finally {
 			if (servsock != null) servsock.close();
-			//if (socktoDB!=null) socktoDB.close();
 		}
 	}
 	public static String convertStreamToString(java.io.InputStream is) {

@@ -19,8 +19,8 @@ import javax.swing.JOptionPane;
 
 public class AuthServer {
 
-	public final static int SOCKET_PORT = 3333;  // you may change this
-	public final static String FILE_TO_SEND = "c:/temp/source.jpg";  // you may change this
+	public final static int SOCKET_PORT = 3333;
+	public final static String FILE_TO_SEND = "c:/temp/source.jpg"; 
 	public final static String FOLDER_TO_STORE = "C:/server/";
 	public final static int FILE_SIZE = 902238600;
 	public final static int NAME_SIZE = 128;
@@ -51,8 +51,6 @@ public class AuthServer {
 				System.out.println("Authentication server operating...");
 				try {
 					sock = servsock.accept();
-					//servsock = new ServerSocket(SOCKET_PORT);
-					//JOptionPane.showMessageDialog(null, "Accepted connection : " + sock);
 					
 					byte[] mybytearrayName  = new byte[NAME_SIZE];//receive the username from client
 					InputStream is2 = sock.getInputStream();
@@ -64,14 +62,10 @@ public class AuthServer {
 					int msLength = Integer.parseInt(vals[1]);
 					String encrypted = vals[2];
 					String serverSocket = vals[3];
-					//System.out.println(name);
-					//JOptionPane.showMessageDialog(null, vals);
 					
 					
 					String decrypted = new String(CipherTools.decrypt(encrypted.getBytes(), 1234));
-					//JOptionPane.showMessageDialog(null, decrypted);
 					
-					//int sessionKey = ThreadLocalRandom.current().nextInt(1111, 9999+1);
 					int sessionKey = 2222;
 					
 					if(decrypted.contains("ACCESS_PLEASE")){
@@ -80,7 +74,6 @@ public class AuthServer {
 						if(serverSocket.equals("3031")) strctTmp = STRICT_KEY;
 						else if(serverSocket.equals("3032")) strctTmp = STRICT_KEY2;
 						else if(serverSocket.equals("3033")) strctTmp = STRICT_KEY3;
-						//JOptionPane.showMessageDialog(null, "You did it fam");
 						byte[] tokentemp = CipherTools.encrypt((sessionKey+"").getBytes(), strctTmp);//sending encrypted ticket to client
 						byte[] token = CipherTools.encrypt(tokentemp, 1234);
 						byte[] token2 = CipherTools.encrypt((sessionKey+"").getBytes(), 1234);// sending encrypted sessionKey to client
@@ -100,9 +93,6 @@ public class AuthServer {
 							e.printStackTrace();
 						}
 						
-						
-						//byte[] token  = new byte[TOKEN_SIZE];
-						//token = resultSocket.getBytes();
 			            os = sock.getOutputStream(); // 
 						System.out.println("Sending " + "ticket" + "(" + token.length + " bytes)");
 						os.write(token,0,token.length);
@@ -111,88 +101,15 @@ public class AuthServer {
 						try {
 							Thread.sleep(500);
 						} catch (InterruptedException e) {
-							// TODO Auto-generated catch block
 							e.printStackTrace();
 						}
 						
 						
-						//token = resultSocket.getBytes();
 			            os = sock.getOutputStream(); 
 						System.out.println("Sending " + "seshKey" + "(" + token2.length + " bytes)");
 						os.write(token2,0,token2.length);
 						os.flush();
 					}
-
-
-
-//					byte [] mybytearray2  = new byte [1];
-//					InputStream is = sock.getInputStream();
-//					int bytesRead = is.read(mybytearray2,0,mybytearray2.length);//receive the indicator byte from client proxy
-					//					
-					//					System.out.println(mybytearray2[0]);
-					//					
-					//					if(mybytearray2[0] == 6){
-					//						System.out.println("here we are");
-					//					}
-					//
-//					if(mybytearray2[0] == 8){
-//						byte[] mybytearrayName  = new byte[NAME_SIZE];//receive the filename from client proxy
-//						InputStream is2 = sock.getInputStream();
-//						is2.read(mybytearrayName,0,mybytearrayName.length);
-//
-//						String name = new String(mybytearrayName);
-//						name = name.trim();
-//						System.out.println(name);
-//
-//						//take in the port number of the server and add a new row to the directory containing the filename and the server port number	
-//						byte[] mybytearraySocket  = new byte [NAME_SIZE];
-//						InputStream isSocket = sock.getInputStream();
-//						isSocket.read(mybytearraySocket,0,mybytearraySocket.length);
-//						
-//						String socketNum = new String(mybytearraySocket);
-//						socketNum = socketNum.trim();
-//						//int serverSocketNumber = Integer.parseInt(socketNum);
-//						System.out.println(socketNum);
-//						
-//						exportToDatabase(name + "," + socketNum);
-//
-//						//sock.close();
-//
-//						//mybytearray2[0] = 6;
-//					}
-//
-//
-//
-//					else{// send file
-//
-//						byte[] mybytearrayName  = new byte [NAME_SIZE];
-//						InputStream is2 = sock.getInputStream();
-//						is2.read(mybytearrayName,0,mybytearrayName.length);
-//
-//						String name = new String(mybytearrayName);
-//						name = name.trim();
-//						System.out.println(name);
-//
-//
-//						//search for the filename in the directory and return the server port number to the client proxy
-//						String resultSocket = "ERROR_";
-//						br = new BufferedReader(new FileReader(loginDetails));
-//			            while ((line = br.readLine()) != null) {
-//
-//			                // use comma as separator
-//			                String[] country = line.split(cvsSplitBy);
-//			                if(name.equals(country[0])){
-//			                	resultSocket = country[1];
-//			                }
-//			            }
-//			            byte [] mybytearray  = new byte [resultSocket.length()]; //send server socket to client proxy
-//						mybytearray = resultSocket.getBytes();
-//			            os = sock.getOutputStream(); // send server socket to client pro server
-//						System.out.println("Sending " + resultSocket + "(" + mybytearray.length + " bytes)");
-//						os.write(mybytearray,0,mybytearray.length);
-//						os.flush();	
-//
-//					}
 				}
 				finally {
 					if (bis != null) bis.close();

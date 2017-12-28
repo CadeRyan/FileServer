@@ -14,8 +14,8 @@ import javax.swing.JOptionPane;
 
 public class Server2 {
 
-	public final static int SOCKET_PORT = 3032;  // you may change this
-	public final static String FILE_TO_SEND = "c:/temp/source.jpg";  // you may change this
+	public final static int SOCKET_PORT = 3032;
+	public final static String FILE_TO_SEND = "c:/temp/source.jpg";
 	public final static String FOLDER_TO_STORE = "C:/Users/Cade/server2/";
 	public final static int FILE_SIZE = 90223860;
 	public final static int NAME_SIZE = 128;
@@ -58,13 +58,9 @@ public class Server2 {
 						byte[] mybytearrayName  = new byte[NAME_SIZE];
 						InputStream is2 = sock.getInputStream();
 						is2.read(mybytearrayName,0,mybytearrayName.length);
-						//for(int i = 0; i < NAME_SIZE; i ++) System.out.println(mybytearrayName[i]);
 						String[] arrtmp = (new String(mybytearrayName)).split("~~");
 						String name = new String(CipherTools.decrypt(arrtmp[0].getBytes(), Integer.parseInt(sessionId)));
-						//String name = arrtmp[0];
-						//name = name.trim();
 						System.out.println(name);
-						//JOptionPane.showMessageDialog(null, name);
 
 						byte [] mybytearray  = new byte [FILE_SIZE];
 						InputStream is4 = sock.getInputStream();
@@ -83,12 +79,8 @@ public class Server2 {
 
 						System.out.println(mybytearray.length + "   " + current);
 						bos.write(CipherTools.decrypt(mybytearray, Integer.parseInt(sessionId)), 0, current);
-						//bos.write(mybytearray, 0, current);
 						bos.flush();
-						//mybytearray2[0] = 6;
 					}
-
-
 
 					else{// send file
 						
@@ -109,7 +101,6 @@ public class Server2 {
 						os = sock.getOutputStream();
 						System.out.println("Sending " + FILE_TO_SEND + "(" + mybytearray.length + " bytes)");
 						os.write(CipherTools.encrypt(mybytearray, Integer.parseInt(sessionId)), 0, mybytearray.length);
-						//os.write(mybytearray,0,mybytearray.length);
 						os.flush();
 						System.out.println("Done.");
 					}
