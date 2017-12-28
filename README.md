@@ -15,7 +15,7 @@ The file server's core functionality is the ability to upload and download files
 which are folders located at C:/Users/Cade/Server1 Server2 and Server3, these folders are created on startup. You will be requested to selected the file you wish to upload using a selection pane.
 These selections may included any file that I have tested, including zipped folders. You may then download any file which has been uploaded by selecting download and typing in the filename,
 including the file extension (PLEASE NOTE THIS IS CASE SENSITIVE BY DESIGN). ie. downloaded_file.jpg. You will then be asked to select the folder where you would like to store the downloaded
-folder, a 'save as' function if you will.
+file, a 'save as' function if you will.
 ___________________________________________________________________________
   
 ### Directory Server
